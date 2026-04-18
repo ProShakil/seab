@@ -7,6 +7,7 @@ use App\Models\MembershipType;
 use App\Models\Occupation;
 use App\Models\Relationship;
 use App\Models\Technology;
+use App\Models\Contact;
 use App\Models\User;
 use App\Models\FrontMessage;
 use App\Models\Gallery;
@@ -737,6 +738,50 @@ class ParameterController extends Controller
         return Inertia::render('Profile', [
             'user' => $user
         ]);
+    }
+
+    public function gallerylist(Request $request)
+    {
+        $type = $request->type;
+
+        $query = Gallery::latest();
+
+        if ($type === 'photo' || $type === 'video') {
+            $query->where('type', $type);
+        }
+
+        return Inertia::render('Gallery', [
+            'galleries' => $query->paginate(12)->withQueryString(),
+            'activeFilter' => $type ?? 'all',
+        ]);
+    }
+
+    public function contact()
+    {
+        return Inertia::render('Contact');
+    }
+
+    public function storeContact(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'nullable|regex:/^\+?[0-9]{7,15}$/',
+            'subject' => 'nullable|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        Contact::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'data_status' => 1,
+            'view_status' => 0,
+        ]);
+
+        return back()->with('success', 'Message sent successfully!');
     }
 
 }

@@ -91,7 +91,7 @@ const userOpen = ref(false)
                 </div>
             </li>  
             <li><Link preserve-scroll class="text-white hover:text-[#D4AF37]" href="#">Gallery</Link></li>
-            <li><Link preserve-scroll class="text-white hover:text-[#D4AF37]" href="#">Contact</Link></li>
+            <li><Link preserve-scroll class="text-white hover:text-[#D4AF37]" :href="route('contact')">Contact</Link></li>
             <template v-if="$page.props.auth?.user">
                 <li class="relative group">
                     
@@ -232,7 +232,7 @@ const userOpen = ref(false)
                     </div>
                 </li>  
                 <li><Link preserve-scroll class="text-white hover:text-[#D4AF37]" href="#">Gallery</Link></li>                
-                <li><Link preserve-scroll class="text-white hover:text-[#D4AF37]" href="#">Contact</Link></li>
+                <li><Link preserve-scroll class="text-white hover:text-[#D4AF37]" :href="route('contact')">Contact</Link></li>
                 <!-- USER -->
                 <li v-if="$page.props.auth.user">
 

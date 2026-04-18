@@ -9,7 +9,7 @@ defineProps({
 
 <template>
     <MainLayout>
-        <section class="relative h-[45vh] flex items-center justify-center overflow-hidden bg-[#001e3c]">
+        <section class="relative h-[35vh] flex items-center justify-center overflow-hidden bg-[#001e3c]">
 
             <!-- Animated Gradient Background -->
             <div class="absolute inset-0 bg-gradient-to-br from-[#001e3c] via-[#002b55] to-[#001e3c] animate-bg"></div>

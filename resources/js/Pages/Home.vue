@@ -270,7 +270,7 @@
             </div>
         </div>
         <div class="grid md:grid-cols-4 gap-4">
-            <div v-for="item in filteredGalleries" :key="item.id" class="relative group overflow-hidden rounded-xl border cursor-pointer">               
+            <div v-for="item in filteredGalleries" :key="item.id" class="relative group overflow-hidden rounded-xl border cursor-pointer" @click="openModal(item)">               
                 <img 
                     v-if="item.type === 'photo'"
                     :src="getImage(item.image)"
@@ -286,7 +286,45 @@
                         allowfullscreen
                     ></iframe>
                 </div>
+
+                <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+                    <span class="material-symbols-outlined text-white text-4xl">
+                        search
+                    </span>
+                </div>
             </div>
+        </div>
+
+        <div class="flex justify-center mt-10">
+            <Link 
+                :href="route('gallery.list')" 
+                class="bg-[#003366] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#002244] transition"
+            >
+                View Gallery
+            </Link>
+        </div>
+
+        <div v-if="showModal"
+            class="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+            @click="closeModal"
+        >
+
+            <!-- PHOTO -->
+            <img 
+                v-if="activeItem?.type === 'photo'"
+                :src="getImage(activeItem.image)"
+                class="max-h-[90vh] max-w-[90vw] rounded-lg"
+            />
+
+            <!-- VIDEO -->
+            <iframe
+                v-else
+                :src="activeItem?.embed_url"
+                class="w-[90vw] h-[80vh]"
+                frameborder="0"
+                allowfullscreen
+            ></iframe>
+
         </div>
     </section>
 
@@ -346,4 +384,16 @@ const btnClass = (type) => [
 // image helper
 const getImage = (path) => `/storage/${path}`
 
+const showModal = ref(false)
+const activeItem = ref(null)
+
+const openModal = (item) => {
+    activeItem.value = item
+    showModal.value = true
+}
+
+const closeModal = () => {
+    showModal.value = false
+    activeItem.value = null
+}
 </script>

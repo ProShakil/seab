@@ -19,10 +19,13 @@ Route::get('/about/{param?}', [ParameterController::class, 'about_section'])->na
 Route::get('/committee-details/{param?}/{id?}', [ParameterController::class, 'committee_details'])->name('committee.details');
 Route::get('/member/{id}', [ParameterController::class, 'memberProfile'])->name('member.profile');
 Route::get('/member-list', [ParameterController::class, 'memberList'])->name('member.list');
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('/gallery-list', [ParameterController::class, 'gallerylist'])->name('gallery.list');
+Route::get('/contact', [ParameterController::class, 'contact'])->name('contact');
+Route::post('/contact', [ParameterController::class, 'storeContact']);
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [ProfileController::class, 'view'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/admin_acess', function () {
     return Inertia::render('AdminView');
 })->middleware(['auth', 'verified'])->name('admin_acess');
@@ -93,7 +96,7 @@ Route::get('/profilelayout', function () {
     return Inertia::render('ProfileView');
 })->middleware(['auth', 'verified'])->name('profile-view');
 
-Route::prefix('user')->middleware(['auth'])->group(function () {
+Route::prefix('user')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'view'])->name('user.profile');
     Route::get('/membership-form', [ProfileController::class, 'membership_form']);
     Route::get('/change-password', [ProfileController::class, 'update_password']);

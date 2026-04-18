@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('phone');
             $table->string('subject')->nullable();
             $table->text('message');
+            $table->boolean('data_status')->default(1);
+            $table->boolean('view_status')->default(0);
             $table->timestamps();
         });
     }
