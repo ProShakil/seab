@@ -123,7 +123,8 @@ const destroy = (id) => {
   Swal.fire({
     title: 'Delete?',
     icon: 'warning',
-    showCancelButton: true
+    showCancelButton: true,
+    scrollbarPadding: false,
   }).then(res => {
     if (res.isConfirmed) {
       router.delete(`/admin/gallery/${id}`, {

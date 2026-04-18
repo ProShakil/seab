@@ -10,7 +10,16 @@ const userOpen = ref(false)
 </script>
 
 <template>
-    <Head title="Welcome" />
+    <Head>
+    <title>{{ page.props.siteSettings?.site_title }}</title>
+
+    <link
+        rel="icon"
+        :href="page.props.siteSettings?.favicon
+        ? `/storage/${page.props.siteSettings.favicon}`
+        : '/favicon.ico'"
+    />
+    </Head>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -22,7 +31,9 @@ const userOpen = ref(false)
 
             <!-- LOGO -->
             <img
-            src="/assets/logo.png"
+            :src="page.props.siteSettings?.logo
+            ? `/storage/${page.props.siteSettings.logo}`
+            : '/assets/logo.png'"
             class="w-10 h-10 rounded-full border-2"
             style="border-color:#D4AF37;"
             />
@@ -30,12 +41,12 @@ const userOpen = ref(false)
 
             <!-- TEXT -->
             <div class="leading-tight">
-            <div class="text-white font-bold text-xs md:text-base">
-                সরিষাবাড়ি ইঞ্জিনিয়ার্স এসোসিয়েশন বাংলাদেশ
-            </div>
-            <div class="text-xs text-gray-300">
-                Sarishabari Engineers Association Bangladesh
-            </div>
+                <div class="text-white font-bold text-xs md:text-base">
+                    {{ page.props.siteSettings?.headline }}
+                </div>
+                <div class="text-xs text-gray-300">
+                    {{ page.props.siteSettings?.subtitle }}
+                </div>
             </div>
 
         </div>

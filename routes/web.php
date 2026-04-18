@@ -90,6 +90,21 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/gallery/video', [ParameterController::class, 'storeVideo']);
     Route::delete('/gallery/{id}', [ParameterController::class, 'destroyGallery']);
 
+    // Blog
+    Route::get('/blog', [ParameterController::class, 'admin_blog'])->name('admin.blog.index');
+    Route::get('blog/add_edit/{id?}', [ParameterController::class, 'addEdit'])->name('admin.blog.create');
+    Route::post('blog/store/{id?}', [ParameterController::class, 'blogStore'])->name('admin.blog.store');
+    Route::post('blog/toggle/{id?}', [ParameterController::class, 'blogToggle'])->name('admin.blog.toggle');
+    Route::post('blog/delete/{id?}', [ParameterController::class, 'blogDelete'])->name('admin.blog.delete');
+
+    Route::get('/settings', [ParameterController::class, 'settings']);
+    Route::post('/site-settings/update', [ParameterController::class, 'siteUpdate'])->name('site.settings.update');
+    
+    Route::get('/contact', [ParameterController::class, 'admin_contact']);
+    Route::post('/contact/read', [ParameterController::class, 'markRead'])->name('admin.contact.read');
+    Route::post('/contact/toggle', [ParameterController::class, 'contactToggle'])->name('admin.contact.toggle');
+    Route::delete('/contact/{id}', [ParameterController::class, 'contactDelete'])->name('admin.contact.delete');
+
 });
 
 Route::get('/profilelayout', function () {

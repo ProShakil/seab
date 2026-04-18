@@ -52,7 +52,13 @@
             <Link href="/admin/gallery" :class="$page.url.startsWith('/admin/gallery') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
               Gallery
             </Link>
-            <Link href="/admin/committee_list" :class="$page.url.startsWith('/admin/committee_list') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
+            <Link href="/admin/blog" :class="$page.url.startsWith('/admin/blog') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
+              Blog
+            </Link>
+            <Link href="/admin/settings" :class="$page.url.startsWith('/admin/settings') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
+              Site Settings
+            </Link>
+            <Link href="/admin/contact" :class="$page.url.startsWith('/admin/contact') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
               Contact
             </Link>
 

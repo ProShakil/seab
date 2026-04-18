@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
             'canRegister' => Route::has('register'),
             'laravelVersion' => \Illuminate\Foundation\Application::VERSION,
             'phpVersion' => PHP_VERSION,
-            'committees_cache' => Cache::remember('committees', 3600, function () {
+            'committees_cache' => Cache::rememberForever('committees', function () {
                 return DB::table('committee_names')
                     ->select('id', 'name')
                     ->where('data_status', 1)
@@ -53,6 +53,18 @@ class HandleInertiaRequests extends Middleware
                         'name' => $item->name,
                     ])
                     ->toArray();
+            }),
+            'siteSettings' => Cache::rememberForever('site_settings', function () {
+                $setting = \App\Models\SiteSetting::first();
+
+                return $setting ? [
+                    'id' => $setting->id,
+                    'site_title' => $setting->site_title,
+                    'headline' => $setting->headline,
+                    'subtitle' => $setting->subtitle,
+                    'logo' => $setting->logo,
+                    'favicon' => $setting->favicon,
+                ] : null;
             }),
         ];
     }

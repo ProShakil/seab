@@ -112,7 +112,8 @@ const saveAll = () => {
         icon: 'success',
         title: 'Saved successfully',
         timer: 1200,
-        showConfirmButton: false
+        showConfirmButton: false,
+        scrollbarPadding: false,
       })
       isDirty.value = false
     }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('excerpt')->nullable();
             $table->longText('content');
+            $table->string('thumbnail', 300)->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->boolean('status')->default(0);
             $table->timestamps();

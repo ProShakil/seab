@@ -77,4 +77,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(MembershipType::class, 'membership_type_id');
     }
+
+    public function blogPosts()
+    {
+        return $this->hasMany(BlogPost::class);
+    }
 }

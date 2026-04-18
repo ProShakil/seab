@@ -11,10 +11,14 @@ use App\Models\Contact;
 use App\Models\User;
 use App\Models\FrontMessage;
 use App\Models\Gallery;
+use App\Models\BlogPost;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -50,7 +54,8 @@ class ParameterController extends Controller
             'name' => $request->name,
             'data_status' => 1,
         ]);
-
+        Cache::forget('committees_cache');
+        Artisan::call('cache:clear');
         return back()->with('success', 'Created successfully');
     }
 
@@ -61,6 +66,8 @@ class ParameterController extends Controller
         CommitteeName::findOrFail($id)->update([
             'name' => $request->name,
         ]);
+        Cache::forget('committees_cache');
+        Artisan::call('cache:clear');
 
         return back()->with('success', 'Updated successfully');
     }
@@ -70,6 +77,8 @@ class ParameterController extends Controller
         $item = CommitteeName::findOrFail($id);
         $item->data_status = $item->data_status == 1 ? 0 : 1;
         $item->save();
+        Cache::forget('committees_cache');
+        Artisan::call('cache:clear');
 
         return back()->with('success', 'Status updated');
     }
@@ -77,6 +86,8 @@ class ParameterController extends Controller
     public function destroy($id)
     {
         CommitteeName::findOrFail($id)->delete();
+        Cache::forget('committees_cache');
+        Artisan::call('cache:clear');
 
         return back()->with('success', 'Deleted successfully');
     }
@@ -103,6 +114,7 @@ class ParameterController extends Controller
         ]);
 
         Cache::forget('committees_cache');
+        Artisan::call('cache:clear');
 
         return back()->with('success', 'Member added');
     }
@@ -111,6 +123,7 @@ class ParameterController extends Controller
     {
         Committee::findOrFail($id)->delete();
         Cache::forget('committees_cache');
+        Artisan::call('cache:clear');
         return back()->with('success', 'Member removed');
     }
 
@@ -554,6 +567,163 @@ class ParameterController extends Controller
         return $id ? "https://www.youtube.com/embed/$id" : null;
     }
 
+    // Blog
+    public function admin_blog()
+    {
+        return inertia('Admin/Blog/Index', [
+           'blogs' => BlogPost::with('user')->latest()->paginate(12)
+        ]);
+    }
+    public function addEdit($id = null)
+    {
+        $blog = null;
+
+        if ($id) {
+            $blog = BlogPost::findOrFail($id);
+        }
+
+        return Inertia::render('Admin/Blog/Create', [
+            'blog' => $blog
+        ]);
+    }
+
+    public function blogStore(Request $request, $id = null)
+    {
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        // INSERT or UPDATE
+        $blog = $id ? BlogPost::findOrFail($id) : new BlogPost();
+
+        $blog->title = $request->title;
+
+        // slug from hidden translated field
+        $slug = $request->slug ?? Str::slug($request->title);
+        $blog->slug = $slug ?: 'blog-' . time();
+
+        $blog->content = $request->content;
+        $blog->excerpt = Str::limit(strip_tags($request->content), 120);
+        $blog->status = 1;
+        $blog->user_id = auth()->id();
+
+        // 📸 thumbnail handling
+        if ($request->hasFile('thumbnail')) {
+
+            // delete old image if update
+            if ($blog->thumbnail && Storage::disk('public')->exists($blog->thumbnail)) {
+                Storage::disk('public')->delete($blog->thumbnail);
+            }
+
+            $path = $request->file('thumbnail')->store('thumbnail', 'public');
+            $blog->thumbnail = $path;
+        }
+
+        $blog->save();
+
+        return redirect()->route('admin.blog.index');
+    }
+
+    public function blogToggle(Request $request)
+    {
+        $item = BlogPost::findOrFail($request->id);
+        $item->status = $item->status == 1 ? 0 : 1;
+        $item->save();
+        return back()->with('success', 'Status updated');
+    }
+
+    public function blogDelete($id)
+    {
+        $blog = BlogPost::findOrFail($id);
+        if ($blog->thumbnail && \Storage::disk('public')->exists($blog->thumbnail)) {
+            \Storage::disk('public')->delete($blog->thumbnail);
+        }
+        $blog->delete();        
+        return back();
+    }
+    // Settings
+
+    public function settings()
+    {
+        return inertia('Admin/Settings/Index', [
+            'setting' => SiteSetting::first()
+        ]);
+    }
+
+    public function siteUpdate(Request $request)
+    {
+        $setting = SiteSetting::first(); // assuming single row
+
+        $request->validate([
+            'site_title' => 'required|string',
+            'headline' => 'nullable|string',
+            'subtitle' => 'nullable|string',
+            'logo' => 'nullable|image',
+            'favicon' => 'nullable|image',
+        ]);
+
+        // LOGO
+        if ($request->hasFile('logo')) {
+
+            if ($setting->logo && Storage::disk('public')->exists($setting->logo)) {
+                Storage::disk('public')->delete($setting->logo);
+            }
+
+            $setting->logo = $request->file('logo')->store('site/logo', 'public');
+        }
+
+        // FAVICON
+        if ($request->hasFile('favicon')) {
+
+            if ($setting->favicon && Storage::disk('public')->exists($setting->favicon)) {
+                Storage::disk('public')->delete($setting->favicon);
+            }
+
+            $setting->favicon = $request->file('favicon')->store('site/favicon', 'public');
+        }
+
+        $setting->site_title = $request->site_title;
+        $setting->headline = $request->headline;
+        $setting->subtitle = $request->subtitle;
+
+        $setting->save();
+        Cache::forget('siteSettings');
+        Artisan::call('cache:clear');
+
+        return back()->with('success', 'Settings updated successfully');
+    }
+
+    // Contact
+    public function admin_contact()
+    {
+        return inertia('Admin/Contact/Index', [
+           'contacts' => Contact::latest()->paginate(12)
+        ]);
+    }
+
+    public function markRead(Request $request)
+    {
+        Contact::where('id', $request->id)->update(['view_status' => 1]);
+        return back();
+    }
+
+    public function contactToggle(Request $request)
+    {
+        $c = Contact::findOrFail($request->id);
+        $c->view_status = $c->view_status == 0 ? 1 : 0;
+        $c->save();
+
+        return back();
+    }
+
+    public function contactDelete($id)
+    {
+        Contact::findOrFail($id)->delete();
+        return back();
+    }
+
+    
     // Front Controller
 
     public function front_page(Request $request)

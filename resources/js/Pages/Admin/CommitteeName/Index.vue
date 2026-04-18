@@ -99,7 +99,8 @@ const destroy = (id) => {
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonText: 'Yes, delete it!',
+    scrollbarPadding: false,
   }).then((result) => {
     if (result.isConfirmed) {
       router.delete(`/admin/committee-names/${id}`, {
@@ -155,7 +156,8 @@ const removeMember = (id) => {
     title: 'Remove member?',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Yes'
+    confirmButtonText: 'Yes',
+    scrollbarPadding: false,
   }).then((result) => {
     if (result.isConfirmed) {
       router.post(`/admin/remove-member/${id}`, {}, {

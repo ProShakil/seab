@@ -97,7 +97,8 @@ const destroy = (id) => {
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonText: 'Yes, delete it!',
+    scrollbarPadding: false,
   }).then((result) => {
     if (result.isConfirmed) {
       router.delete(`/admin/technology/${id}`, {
