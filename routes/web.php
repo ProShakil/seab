@@ -22,6 +22,8 @@ Route::get('/member-list', [ParameterController::class, 'memberList'])->name('me
 Route::get('/gallery-list', [ParameterController::class, 'gallerylist'])->name('gallery.list');
 Route::get('/contact', [ParameterController::class, 'contact'])->name('contact');
 Route::post('/contact', [ParameterController::class, 'storeContact']);
+Route::get('/blogs', [ParameterController::class, 'Blogindex'])->name('blogs.index');
+Route::get('/blogs/{slug}', [ParameterController::class, 'Blogshow'])->name('blogs.show');
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

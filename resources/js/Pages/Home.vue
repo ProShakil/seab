@@ -119,56 +119,31 @@
 
 
 
-    <section class="py-24 bg-surface-container-highest">
+    <section v-if="blogs && blogs.length > 0" class="py-24 bg-surface-container-highest">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex justify-between items-end mb-12">
                 <div>
                     <h2 class="text-primary font-headline text-4xl font-extrabold">Industry Insights</h2>
                     <p class="text-on-surface-variant mt-2">The latest from the engineering frontier in Bangladesh.</p>
                 </div>
-                <button class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-tertiary hover:border-tertiary transition-all">View All Stories</button>
+                <Link :href="route('blogs.index')"  class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-tertiary hover:border-tertiary transition-all">View All Stories</Link>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow group">
+                <article v-for="blog in blogs" :key="blog.id" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow group">
                     <div class="h-56 overflow-hidden">
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern geometric office building facade with glass reflections and architectural lines, minimalist engineering design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6fk1BxJW5lEOi9V_FHtD2SVgwuVdh-7ZtESLirnfBisQw01zLBbDAVJaiT3AnvNcxdPaf0gAdfYEgcxdzfBKk6LU5fRD-2XzckFPGA5dEOJjKBgyuGBoTBs1qXEpMaeTwPKbsXHLktGkU7IXjWL6bhC_YkmO3G8vJMbrg7r4IoGj05D0GmAC7rAcj813E3cAYax5-sSeFmYNcHKi-2wwFSUCWGrp8s9RvWdoWm_Lqq-o8QehQxDGZIrUw968YYowxYGNJSg4iSO0"/>
+                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern geometric office building facade with glass reflections and architectural lines, minimalist engineering design" :src="`/storage/${blog.thumbnail}`"/>
                     </div>
                     <div class="p-8">
-                    <span class="text-xs font-bold text-tertiary tracking-widest uppercase mb-3 block">Structural Engineering</span>
-                    <h3 class="text-xl font-bold text-primary mb-4 leading-tight">The Future of Green Concrete in local Construction</h3>
-                    <p class="text-on-surface-variant text-sm mb-6 line-clamp-2">How Sarishabari engineers are pioneering the use of recycled materials in sustainable housing projects.</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-outline">Oct 12, 2024</span>
-                        <span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform">arrow_forward</span>
-                    </div>
-                    </div>
-                </article>
-                <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow group">
-                    <div class="h-56 overflow-hidden">
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Intricate electrical circuit board with glowing blue light trails, representing advanced electronic and computer engineering" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs9YoQPgZEOiIhkvdF-vnmTpbQpVh8NaNfaSYkMJZF6Kvt0HR_vQaSsOzeNQn9u83sJnMe_rHZujmaryVN46BADplJhrSTFYkBMEYoXvgkbOmCnFYSTPH0lZqrlUqzaOL6wCV-68bxHbwzAl91zlhglDFQ5KHDiGjDDvBfzoGSCzF_vIPNf9a_bAY97FQrigeZ9dPbTAQGjP0OEd4OkNnOmSIsQZ_Npwh1eyZFrVes-th450d5ND6CbOtBLRDAxoIuNzCxlvkWh94"/>
-                    </div>
-                    <div class="p-8">
-                    <span class="text-xs font-bold text-tertiary tracking-widest uppercase mb-3 block">Events</span>
-                    <h3 class="text-xl font-bold text-primary mb-4 leading-tight">Annual Engineering Summit: Dhaka 2024</h3>
-                    <p class="text-on-surface-variant text-sm mb-6 line-clamp-2">Join us for a three-day convention featuring keynote speakers from global engineering firms.</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-outline">Nov 05, 2024</span>
-                        <span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform">event</span>
-                    </div>
-                    </div>
-                </article>
-                <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow group">
-                    <div class="h-56 overflow-hidden">
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Digital concept of smart city infrastructure with network lines over a city skyline at dusk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAxV4tvZyb5pPeQCR0FGh10memxdK9OHpuXl342uFOT28rHZav_sCSaLE1xPe1yG-1NIjqZatQIX8YYjtZS6okcUP7nvqttcJT7utivY1OQYua9XcVGU1vWn9r0L2OJpkQ-whCvxjjzVOnLnWYllIPMS93wdvBouo_6F-evfs84oEQiMV_ykPJPq1q-thnNtzqoMFpEwySeTl4HWF6ers-eArGHhAQVvS6YjnnO9qvYqSyYdn8Yr_3MpwftrDD4JBrpz4ChZdKNvk"/>
-                    </div>
-                    <div class="p-8">
-                    <span class="text-xs font-bold text-tertiary tracking-widest uppercase mb-3 block">News</span>
-                    <h3 class="text-xl font-bold text-primary mb-4 leading-tight">SEAB Scholarship Program 2025 Announced</h3>
-                    <p class="text-on-surface-variant text-sm mb-6 line-clamp-2">Supporting the next generation of engineers with financial grants for higher education.</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-outline">Sept 28, 2024</span>
-                        <span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform">school</span>
-                    </div>
+                        <Link :href="route('blogs.show', blog.slug)">
+                            <h3 class="text-xl font-bold text-primary mb-4 leading-tight">{{ blog.title }}</h3>
+                        </Link>
+                        <p class="text-on-surface-variant text-sm mb-6 line-clamp-2">{{ blog.excerpt }}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-outline">{{ new Date(blog.created_at).toLocaleDateString('en-US', { month:'short', day:'2-digit', year:'numeric' }) }}</span>
+                            <Link :href="route('blogs.show', blog.slug)">
+                                <span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                            </Link>
+                        </div>
                     </div>
                 </article>
             </div>
@@ -339,7 +314,8 @@ import MainLayout from '@/Layouts/MainLayout.vue'
 const props = defineProps({
     frontMessages: Object,
     committees: Array,
-    galleries: Array
+    galleries: Array,
+    blogs: Array,
 });
 const images = [
   'https://images.unsplash.com/photo-1503387762-592deb58ef4e',

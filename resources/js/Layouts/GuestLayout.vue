@@ -1,6 +1,7 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+// import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Link, usePage  } from '@inertiajs/vue3';
+const { props } = usePage()
 </script>
 
 <template>
@@ -9,7 +10,13 @@ import { Link } from '@inertiajs/vue3';
     >
         <div>
             <Link href="/">
-                <ApplicationLogo class="h-20 w-20 fill-current text-gray-500" />
+                <img
+                    :src="props.siteSettings?.logo
+                    ? `/storage/${props.siteSettings.logo}`
+                    : '/assets/logo.png'"
+                    class="h-20 w-20 fill-current text-gray-500"
+                />
+                <!-- <ApplicationLogo class="h-20 w-20 fill-current text-gray-500" /> -->
             </Link>
         </div>
 

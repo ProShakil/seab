@@ -767,6 +767,7 @@ class ParameterController extends Controller
             'frontMessages' => $frontMessages,
             'committees' => $committees,
             'galleries' => $query->take(12)->get(),
+            'blogs' => BlogPost::latest()->take(3)->where('status',1)->get(),
             'activeFilter' => $type ?? 'all',
         ]);
     }
@@ -952,6 +953,50 @@ class ParameterController extends Controller
         ]);
 
         return back()->with('success', 'Message sent successfully!');
+    }
+
+    public function Blogindex()
+    {
+        $blogs = BlogPost::where('status', 1)
+            ->latest()
+            ->paginate(3)
+            ->withQueryString();
+
+        return Inertia::render('Blog', [
+            'blogs' => $blogs
+        ]);
+    }
+    public function Blogshow($slug)
+    {
+        $blog = BlogPost::where('slug', $slug)
+            ->where('status', 1)
+            ->firstOrFail();
+
+        // previous post
+        $previous = BlogPost::where('status', 1)
+            ->where('id', '<', $blog->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        // next post
+        $next = BlogPost::where('status', 1)
+            ->where('id', '>', $blog->id)
+            ->orderBy('id', 'asc')
+            ->first();
+
+        // sidebar latest 5 blogs
+        $relatedBlogs = BlogPost::where('status', 1)
+            ->where('id', '!=', $blog->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return Inertia::render('Blogdetails', [
+            'blog' => $blog,
+            'previous' => $previous,
+            'next' => $next,
+            'relatedBlogs' => $relatedBlogs,
+        ]);
     }
 
 }
