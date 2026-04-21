@@ -7,11 +7,22 @@
 
     <!-- PAGE WRAPPER (adds left/right spacing) -->
     <div class="flex-1 bg-gray-100">
-
-      <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex gap-6 py-6">
-
+      <div class="w-[98%] mx-auto md:max-w-7xl md:mx-auto md:px-6 lg:px-8 flex flex-col md:flex-row gap-2 py-6">
+        <div class="md:hidden">
+          <button 
+            @click="open = !open"
+            class="w-full bg-secondary text-white p-3 rounded-xl flex justify-between items-center"
+          >
+            <span>Users Panel</span>
+            <span>{{ open ? '−' : '+' }}</span>
+          </button>
+        </div>
         <!-- LEFT SIDEBAR -->
-        <aside class="w-64 bg-secondary text-white p-4 rounded-xl shadow hidden md:block">
+        <aside :class="[
+          'bg-secondary text-white p-4 rounded-xl shadow transition-all duration-300',
+          'w-full md:w-64',
+          open ? 'block' : 'hidden md:block'
+        ]">
 
           <h2 class="text-lg font-bold mb-4 text-[#D4AF37]">
             Users Panel
@@ -53,4 +64,6 @@
 import Header from '@/Components/Header.vue'
 import Footer from '@/Components/Footer.vue'
 import { Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+const open = ref(false)
 </script>
