@@ -14,5 +14,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 class SiteSetting extends Model
 {
-    //
+    public function reunionPeriod()
+    {
+        return $this->belongsTo(ReunionPeriod::class, 'reunion_id');
+    }
 }

@@ -43,6 +43,7 @@ return new class extends Migration
             $table->string('emergency_contact_no', 20)->nullable();
             $table->string('profile_image', 300)->nullable();
             $table->string('signature', 300)->nullable();
+            $table->string('union_name',100)->nullable();
             $table->boolean('is_admin')->default(0);
             $table->integer('admin_role_id')->nullable();
             $table->integer('data_status')->default(0);

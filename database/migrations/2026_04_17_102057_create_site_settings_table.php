@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('subtitle')->nullable();
             $table->string('logo')->nullable();
             $table->string('favicon')->nullable();
+            $table->boolean('reunion')->default(0);
+            $table->foreignId('reunion_id')->nullable()->constrained('reunion_period');
             $table->timestamps();
         });
     }

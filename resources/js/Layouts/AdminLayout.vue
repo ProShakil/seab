@@ -13,7 +13,7 @@
             @click="open = !open"
             class="w-full bg-secondary text-white p-3 rounded-xl flex justify-between items-center"
           >
-            <span>Users Panel</span>
+            <span>Admin Panel</span>
             <span>{{ open ? '−' : '+' }}</span>
           </button>
         </div>
@@ -30,6 +30,9 @@
 
           <nav class="flex flex-col gap-2">
 
+            <Link href="/admin/breaking-news" :class="$page.url.startsWith('/admin/breaking-news') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
+              Breaking News
+            </Link>
             <Link href="/admin/committee-names" :class="$page.url.startsWith('/admin/committee-names') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
               Committee Name
             </Link>
@@ -66,6 +69,9 @@
             </Link>
             <Link href="/admin/blog" :class="$page.url.startsWith('/admin/blog') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
               Blog
+            </Link>
+            <Link href="/admin/reunion" :class="$page.url.startsWith('/admin/reunion') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
+              Reunion
             </Link>
             <Link href="/admin/settings" :class="$page.url.startsWith('/admin/settings') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
               Site Settings

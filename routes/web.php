@@ -40,6 +40,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/breaking-news', [ParameterController::class, 'breakingindex']);
+    Route::post('/breaking-news', [ParameterController::class, 'breakingstore']);
+    Route::put('/breaking-news/{id}', [ParameterController::class, 'breakingupdate']);
+    Route::put('/breaking-news/{id}/toggle', [ParameterController::class, 'breakingtoggle'])->name('admin.breaking-news.toggle');
+    Route::delete('/breaking-news/{id}', [ParameterController::class, 'breakingdestroy']);
+
     Route::get('/committee-names', [ParameterController::class, 'index']);
     Route::post('/committee-names', [ParameterController::class, 'store']);
     Route::put('/committee-names/{id}', [ParameterController::class, 'update']);
@@ -80,7 +86,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::put('/technology/{id}/toggle', [ParameterController::class, 'technology_toggle'])->name('admin.technology.toggle');
     Route::delete('/technology/{id}', [ParameterController::class, 'technology_destroy']);
 
-    Route::get('/users', [ParameterController::class, 'user_list']);
+    Route::get('/users', [ParameterController::class, 'user_list'])->name('users.list');
     Route::put('/user-update/{id}', [ParameterController::class, 'user_update'])->name('users.update');
     Route::get('/users/show/{id}', [ParameterController::class, 'memberProfile'])->name('users.show');
 
@@ -107,6 +113,25 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/contact/toggle', [ParameterController::class, 'contactToggle'])->name('admin.contact.toggle');
     Route::delete('/contact/{id}', [ParameterController::class, 'contactDelete'])->name('admin.contact.delete');
 
+    // Reunion
+    Route::get('/reunion', [ParameterController::class, 'reunionindex']);
+    Route::post('/reunion/settings', [ParameterController::class, 'reunionSettings']);
+    Route::get('/tab/reunion', [ParameterController::class, 'reunionTabindex']);
+    Route::post('/tab/reunion', [ParameterController::class, 'reunionstore']);
+    Route::put('/tab/reunion/{id}', [ParameterController::class, 'reunionupdate']);
+    Route::put('/tab/reunion/{id}/toggle', [ParameterController::class, 'reuniontoggle'])->name('admin.reunion.toggle');
+    Route::delete('/tab/reunion/{id}', [ParameterController::class, 'reuniondestroy']);
+
+    Route::get('/tab/payment-method', [ParameterController::class, 'paymentMethodIndex']);
+    Route::post('/tab/payment-method', [ParameterController::class, 'paymentMethodStore']);
+    Route::put('/tab/payment-method/{id}', [ParameterController::class, 'paymentMethodUpdate']);
+    Route::put('/tab/payment-method/{id}/toggle', [ParameterController::class, 'paymentMethodToggle'])->name('admin.payment-method.toggle');
+    Route::delete('/tab/payment-method/{id}', [ParameterController::class, 'paymentMethoddestroy']);
+
+    Route::get('/tab/payments', [ParameterController::class, 'reunionTabpayment']);
+    Route::put('/tab/payments/{id}/toggle', [ParameterController::class, 'paymentToggle'])->name('admin.payments.toggle');
+    Route::delete('/tab/payments/{id}', [ParameterController::class, 'reunionPayDelete']);
+
 });
 
 Route::get('/profilelayout', function () {
@@ -117,6 +142,9 @@ Route::prefix('user')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'view'])->name('user.profile');
     Route::get('/membership-form', [ProfileController::class, 'membership_form']);
     Route::get('/change-password', [ProfileController::class, 'update_password']);
+    Route::get('/reunion', [ProfileController::class, 'reunion']);
+    Route::post('/reunion/register', [ProfileController::class, 'reunionpayment']);
+    Route::get('/reunion/payment/{id}/download', [ProfileController::class, 'download']);
 });
 
 require __DIR__.'/auth.php';

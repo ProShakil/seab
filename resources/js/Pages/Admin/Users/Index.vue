@@ -160,7 +160,7 @@ const updateUser = () => {
                         <!-- TECHNOLOGY -->
                         <td class="p-3">
                             <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded mr-1">
-                                {{ user.technology.name }}
+                                {{ user.technology?.name }}
                             </span>
                         </td>
 

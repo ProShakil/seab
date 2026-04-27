@@ -3,6 +3,16 @@ import ProfileLayout from '@/Layouts/ProfileLayout.vue'
 import { useForm } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 
+const unions = [
+  "Satpoa",
+  "Pogoldigha",
+  "Doyail",
+  "Aona",
+  "Pingna",
+  "Bhatara",
+  "Kamrabd",
+  "Mohadan"
+];
 const props = defineProps({
   user: Object,
   relationships: Array,
@@ -28,6 +38,7 @@ const form = useForm({
 
   present_address_detail: props.user.present_address_detail,
   permanent_address_details: props.user.permanent_address_details,
+  union_name: props.user.union_name,
 
   tech_id: props.user.tech_id,
   occupation_id: props.user.occupation_id,
@@ -176,7 +187,13 @@ const activeClass = 'px-4 py-3 border-b-2 border-[#D4AF37] text-[#D4AF37]'
 
         <textarea v-model="form.present_address_detail" class="input w-full border p-2 mb-4" placeholder="Present Address"></textarea>
         <textarea v-model="form.permanent_address_details" class="input w-full border p-2 mb-4" placeholder="Permanent Address"></textarea>
+        <select v-model="form.union_name" class="w-full border rounded p-2">
+          <option value="" disabled>Select Union</option>
 
+          <option v-for="u in unions" :key="u" :value="u">
+            {{ u }}
+          </option>
+        </select>
       </div>
 
       <!-- PROFESSIONAL -->

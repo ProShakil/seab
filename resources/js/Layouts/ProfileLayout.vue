@@ -4,7 +4,6 @@
 
     <!-- HEADER -->
     <Header />
-
     <!-- PAGE WRAPPER (adds left/right spacing) -->
     <div class="flex-1 bg-gray-100">
       <div class="w-[98%] mx-auto md:max-w-7xl md:mx-auto md:px-6 lg:px-8 flex flex-col md:flex-row gap-2 py-6">
@@ -40,7 +39,31 @@
 
             <Link href="/user/change-password" :class="$page.url.startsWith('/user/change-password') ? 'text-[#D4AF37] font-normal' : 'hover:text-[#D4AF37]'">
               Change Password
-            </Link>   
+            </Link>
+            <Link
+                v-if="$page.props.showReunionLink"
+                href = "/user/reunion"
+                class="relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-600 font-semibold shadow-sm hover:bg-red-100 transition"
+                :class="$page.url.startsWith('/user/reunion')
+                  ? 'bg-red-100 text-red-700 border border-red-300 ring-1 ring-red-200'
+                  : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'"
+                >
+                <!-- blinking dot -->
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+                </span>
+
+                <!-- text -->
+                <span class="tracking-wide animate-pulse">
+                  Reunion Open
+                </span>
+
+                <!-- badge -->
+                <span class="ml-1 text-[10px] bg-red-600 text-white px-2 py-[2px] rounded-full">
+                  LIVE
+                </span>
+              </Link>
           </nav>
         </aside>
 

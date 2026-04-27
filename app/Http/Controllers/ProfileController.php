@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SiteSetting;
+use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -84,6 +87,7 @@ class ProfileController extends Controller
     public function view() {
         return Inertia::render('Users/Index', [
             'user' => auth()->user()->load(['relationship', 'technology','occupation']),
+            'showReunionLink' => $this->isReunionActive(),
         ]);
     }
     public function membership_form()
@@ -93,14 +97,96 @@ class ProfileController extends Controller
             'relationships' => \App\Models\Relationship::select('id','name')->get(),
             'occupations' => \App\Models\Occupation::select('id','name')->get(),
             'technologies' => \App\Models\Technology::select('id','name')->get(),
+            'showReunionLink' => $this->isReunionActive(),
         ]);
     }
 
     public function update_password() {
         return Inertia::render('Users/UpdatePassword', [
-            'user' => auth()->user()
+            'user' => auth()->user(),
+            'showReunionLink' => $this->isReunionActive(),
         ]);
     }
 
+    public static function isReunionActive(): bool
+    {
+        $setting = SiteSetting::with('reunionPeriod')->first();
+
+        if (
+            !$setting ||
+            !$setting->reunion ||
+            !$setting->reunion_id ||
+            !$setting->reunionPeriod
+        ) {
+            return false;
+        }
+
+        $reunion = $setting->reunionPeriod;
+
+        $today = now()->toDateString();
+
+        return $today >= $reunion->start_date
+            && $today <= $reunion->end_date;
+    }
+
+    public function reunion()
+    {
+        $setting = SiteSetting::first();
+
+        $payments = Payment::with('reunionPeriod','paymentMethod')->where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10);
+
+        $methods = PaymentMethod::where('data_status', 1)->whereNot('type', 'CASH')->get();
+
+        return Inertia::render('Users/Reunion', [
+            'payments' => $payments,
+            'methods' => $methods,
+            'showReunionLink' => $this->isReunionActive(),
+        ]); 
+    }
+
+
+    public function reunionpayment(Request $request)
+    {
+        $setting = SiteSetting::first();
+
+        // validation
+        $data = $request->validate([
+            'payment_date'   => 'required|date',
+            'trx_id'         => 'required|string|max:100',
+            'reference'      => 'nullable|string|max:255',
+            'payment_method' => 'required',
+        ]);
+
+        // create
+        Payment::create([
+            'user_id' => auth()->id(),
+            'reunion_period_id' => $setting->reunion_id,
+            'payment_date' => $data['payment_date'],
+            'trx_id' => $data['trx_id'],
+            'reference' => $data['reference'],
+            'payment_method' => $data['payment_method'],
+            'payment_status' => 0,
+        ]);
+        return back()->with('success', 'Payment submitted successfully');
+    }
+
+    public function download($id)
+    {
+        $payment = payment::with(['user', 'reunionPeriod'])->findOrFail($id);
+
+        $receiptModel = $payment->reunionPeriod->receipt_model;
+
+        if ($receiptModel == 1) {
+            return view('global', [
+                'payment' => $payment
+            ]);
+        }
+
+        return view('eid', [
+            'payment' => $payment
+        ]);
+    }
     
 }

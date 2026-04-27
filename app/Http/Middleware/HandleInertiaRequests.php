@@ -54,6 +54,21 @@ class HandleInertiaRequests extends Middleware
                     ])
                     ->toArray();
             }),
+
+            'breakingNews_cache' => Cache::rememberForever('breakingNews_cache', function () {
+                return DB::table('breaking_news')
+                    ->select('id', 'title')
+                    ->where('data_status', 1)
+                    ->orderByDesc('id')
+                    ->get()
+                    ->map(fn ($item) => [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                    ])
+                    ->toArray();
+            }),
+
+
             'siteSettings' => Cache::rememberForever('site_settings', function () {
                 $setting = \App\Models\SiteSetting::first();
 
@@ -64,6 +79,8 @@ class HandleInertiaRequests extends Middleware
                     'subtitle' => $setting->subtitle,
                     'logo' => $setting->logo,
                     'favicon' => $setting->favicon,
+                    'reunion' => $setting->reunion,
+                    'reunion_id' => $setting->reunion_id,
                 ] : null;
             }),
         ];

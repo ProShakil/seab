@@ -24,6 +24,7 @@ use Illuminate\Notifications\Notifiable;
     'gender',
     'present_address_detail',
     'permanent_address_details',
+    'union_name',
     'contact_no',
     'tech_id',
     'occupation_id',

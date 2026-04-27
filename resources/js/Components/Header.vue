@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 const page = usePage()
 const open = ref(false)
@@ -7,8 +7,39 @@ const aboutOpen = ref(false)
 const committeeOpen = ref(false)
 const memberOpen = ref(false)
 const userOpen = ref(false)
-</script>
+const breakingNews = ref([])
+const currentIndex = ref(0)
+let interval = null
 
+onMounted(() => {
+  breakingNews.value = page.props.breakingNews_cache || []
+
+  if (breakingNews.value.length > 1) {
+    interval = setInterval(() => {
+      currentIndex.value =
+        (currentIndex.value + 1) % breakingNews.value.length
+    }, 3000)
+  }
+})
+
+onBeforeUnmount(() => {
+  clearInterval(interval)
+})
+</script>
+<style>
+.ticker {
+  animation: scrollTicker 25s linear infinite;
+}
+
+@keyframes scrollTicker {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+</style>
 <template>
     <Head>
     <title>{{ page.props.siteSettings?.site_title }}</title>
@@ -24,6 +55,48 @@ const userOpen = ref(false)
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <header class="sticky top-0 z-50 bg-[#001E3C] shadow-md">
+        <div v-if="breakingNews.length" class="w-full bg-gradient-to-r from-white via-gray-100 to-white text-gray-900 flex items-center overflow-hidden h-[36px]"
+        >
+
+            <!-- LEFT LABEL (TV style badge) -->
+            <div class="flex items-center gap-2 px-4 h-full bg-red-600 text-white font-semibold tracking-wide shadow-sm">
+                
+                <!-- blinking LIVE dot -->
+                <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                </span>
+
+                Breaking
+            </div>
+
+            <!-- SCROLLING NEWS -->
+            <div class="relative flex-1 overflow-hidden">
+                <div class="ticker flex whitespace-nowrap gap-10 px-6">
+
+                <span
+                    v-for="item in breakingNews"
+                    :key="item.id"
+                    class="flex items-center gap-3 text-sm font-medium"
+                >
+                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                    {{ item.title }}
+                </span>
+
+                <!-- duplicate for smooth loop -->
+                <span
+                    v-for="item in breakingNews"
+                    :key="'dup-'+item.id"
+                    class="flex items-center gap-3 text-sm font-medium"
+                >
+                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                    {{ item.title }}
+                </span>
+
+                </div>
+            </div>
+
+            </div>
         <nav class="relative w-full h-[70px] px-6 md:px-16 flex items-center justify-between">
 
         <!-- LOGO -->
@@ -34,7 +107,7 @@ const userOpen = ref(false)
             :src="page.props.siteSettings?.logo
             ? `/storage/${page.props.siteSettings.logo}`
             : '/assets/logo.png'"
-            class="w-10 h-10 rounded-full border-2"
+            class="w-16 h-16 rounded-full border-2 bg-white"
             style="border-color:#D4AF37;"
             />
 

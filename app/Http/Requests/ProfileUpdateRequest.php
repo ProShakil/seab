@@ -35,6 +35,7 @@ class ProfileUpdateRequest extends FormRequest
 
             'present_address_detail' => ['nullable', 'string', 'max:500'],
             'permanent_address_details' => ['nullable', 'string', 'max:500'],
+            'union_name' => ['nullable', 'string', 'max:100'],
 
             'employer_name' => ['nullable', 'string', 'max:300'],
             'designation' => ['nullable', 'string', 'max:200'],

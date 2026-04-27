@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\breaking_news;
 use App\Models\CommitteeName;
 use App\Models\Committee;
 use App\Models\CommitteeDesignation;
@@ -13,6 +14,9 @@ use App\Models\FrontMessage;
 use App\Models\Gallery;
 use App\Models\BlogPost;
 use App\Models\SiteSetting;
+use App\Models\ReunionPeriod;
+use App\Models\PaymentMethod;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +25,74 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class ParameterController extends Controller
 {
+    public function breakingindex(Request $request)
+    {
+        $search = $request->search;
+
+        $breaking_news = breaking_news::when($search, function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%");
+            })
+            ->paginate(10)
+            ->withQueryString();
+
+        return inertia('Admin/BreakingNews/Index', [
+            'data' => $breaking_news,
+            'filters' => ['search' => $search],
+        ]);
+    }
+
+    public function breakingstore(Request $request)
+    {
+        $request->validate(['title' => 'required']);
+
+        breaking_news::create([
+            'title' => $request->title,
+            'data_status' => 1,
+        ]);
+        Cache::forget('breakingNews_cache');
+        Artisan::call('cache:clear');
+        return back()->with('success', 'Created successfully');
+    }
+
+    public function breakingupdate(Request $request, $id)
+    {
+        $request->validate(['title' => 'required']);
+
+        breaking_news::findOrFail($id)->update([
+            'title' => $request->title,
+        ]);
+        Cache::forget('breakingNews_cache');
+        Artisan::call('cache:clear');
+
+        return back()->with('success', 'Updated successfully');
+    }
+
+    public function breakingtoggle($id)
+    {
+        $item = breaking_news::findOrFail($id);
+        $item->data_status = $item->data_status == 1 ? 0 : 1;
+        $item->save();
+        Cache::forget('breakingNews_cache');
+        Artisan::call('cache:clear');
+
+        return back()->with('success', 'Status updated');
+    }
+
+    public function breakingdestroy($id)
+    {
+        breaking_news::findOrFail($id)->delete();
+        Cache::forget('breakingNews_cache');
+        Artisan::call('cache:clear');
+
+        return back()->with('success', 'Deleted successfully');
+    }
+
+
+    // Committee_name
     public function index(Request $request)
     {
         $search = $request->search;
@@ -419,7 +488,7 @@ class ParameterController extends Controller
         }
 
         return Inertia::render('Admin/Users/Index', [
-            'users' => $query->orderBy('id', 'asc')->paginate(10)->withQueryString(),
+            'users' => $query->orderBy('id', 'desc')->paginate(10)->withQueryString(),
             'filters' => $request->only(['search']),
             'membershipTypes' => MembershipType::where('data_status', 1)->get(),
         ]);
@@ -692,6 +761,201 @@ class ParameterController extends Controller
         Artisan::call('cache:clear');
 
         return back()->with('success', 'Settings updated successfully');
+    }
+
+    // Reunion
+    public function reunionSettings(Request $request)
+    {
+       $setting = SiteSetting::first();
+        $request->validate([
+            'reunion' => 'required|integer',
+            'reunion_id' => 'required|integer',
+        ]);
+
+        $setting->reunion = $request->reunion;
+        $setting->reunion_id = $request->reunion_id;
+
+        $setting->save();
+        Cache::forget('siteSettings');
+        Artisan::call('cache:clear');
+
+        return back()->with('success', 'Settings updated successfully');
+
+    }
+    
+    public function reunionIndex()
+    {
+        return inertia('Admin/Reunion/Index');
+    }
+    public function reunionTabindex(Request $request)
+    {
+        $search = $request->search;
+
+        $reunion_period = ReunionPeriod::when($search, function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%");
+            })
+            ->paginate(10)
+            ->withQueryString();
+
+        return response()->json([
+            'data' => $reunion_period
+        ]);
+    }
+
+    public function reunionstore(Request $request)
+    {
+        $data = $request->validate([
+            'title' => 'required',
+            'fee' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'receipt_model' => 'required',
+        ]);
+
+        ReunionPeriod::create($data);
+        return back()->with('success', 'Created successfully');
+    }
+
+    public function reunionupdate(Request $request, $id)
+    {
+        $data = $request->validate([
+            'title' => 'required',
+            'fee' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'receipt_model' => 'required',
+        ]);
+
+        ReunionPeriod::findOrFail($id)->update($data);
+        return back()->with('success', 'Updated successfully');
+    }
+
+    public function reuniontoggle($id)
+    {
+        $item = ReunionPeriod::findOrFail($id);
+        $item->data_status = $item->data_status == 1 ? 0 : 1;
+        $item->save();
+        return back()->with('success', 'Status updated');
+    }
+
+    public function reuniondestroy($id)
+    {
+        ReunionPeriod::findOrFail($id)->delete();
+        return back()->with('success', 'Deleted successfully');
+    }
+
+    // Payment Method
+    public function paymentMethodIndex(Request $request)
+    {
+        $query = PaymentMethod::query();
+
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        return response()->json([
+            'data' => $query->latest()->get()
+        ]);
+    }
+
+    public function paymentMethodStore(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'type' => 'nullable',
+            'account_number' => 'nullable',
+            'account_name' => 'nullable',
+            'description' => 'nullable',
+        ]);
+
+        PaymentMethod::create($data);
+
+        return back()->with('success', 'Created successfully');
+    }
+
+    public function paymentMethodUpdate(Request $request, $id)
+    {
+        $item = PaymentMethod::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required',
+            'type' => 'nullable',
+            'account_number' => 'nullable',
+            'account_name' => 'nullable',
+            'description' => 'nullable',
+        ]);
+
+        $item->update($data);
+
+        return back()->with('success', 'Updated successfully');
+    }
+
+    public function paymentMethodToggle($id)
+    {
+        $item = PaymentMethod::findOrFail($id);
+        $item->data_status = $item->data_status == 1 ? 0 : 1;
+        $item->save();
+
+        return back()->with('success', 'Status updated');
+    }
+
+    public function paymentMethoddestroy($id)
+    {
+        PaymentMethod::findOrFail($id)->delete();
+        return back()->with('success', 'Deleted successfully');
+    }
+
+    // Payment list and Update 
+    public function reunionTabpayment(Request $request)
+    {
+        $payments = Payment::with(['user', 'reunionPeriod', 'paymentMethod'])
+
+            ->when($request->search, function ($query) use ($request) {
+                $query->whereHas('user', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search . '%');
+                });
+            })
+
+            ->when($request->reunion_period_id, function ($query) use ($request) {
+                $query->where('reunion_period_id', $request->reunion_period_id);
+            })
+
+            ->latest()
+            ->paginate(10);  
+        
+        return response()->json($payments);
+    }
+
+    public function paymentToggle($id)
+    {
+        $item = Payment::findOrFail($id);
+
+        $item->payment_status = $item->payment_status == 1 ? 0 : 1;
+        if ($item->payment_status == 1 && !$item->receipt_number) {
+            $year = Carbon::now()->format('y');
+            $lastReceipt = Payment::whereYear('created_at', Carbon::now()->year)
+                ->whereNotNull('receipt_number')
+                ->orderBy('receipt_number', 'desc')
+                ->value('receipt_number');
+            if ($lastReceipt) {
+                $lastNumber = (int) substr($lastReceipt, 2);
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
+            }
+            
+            $item->receipt_number = $year . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        }
+
+        $item->save();
+
+        return back()->with('success', 'Status updated');
+    }
+
+    public function reunionPayDelete($id)
+    {
+        Payment::findOrFail($id)->delete();
+        return back()->with('success', 'Deleted successfully');
     }
 
     // Contact
